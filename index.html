@@ -1,0 +1,2779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hora - Wisdom in every hour</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --pink: #ff006e;
+      --dark-bg: #1a1a2e;
+      --darker-bg: #16213e;
+      --darkest-bg: #0f3460;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --light-bg: #f8f9fa;
+      --light-card: #ffffff;
+      --text-light: #e8e8e8;
+      --text-dark: #212529;
+      --text-medium: #4a4a4a;
+      --border-light: #dee2e6;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      height: 100%;
+      width: 100%;
+    }
+
+    .theme-dark {
+      background: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    .theme-dark .card,
+    .theme-dark .current-hour-hero,
+    .theme-dark .info-card,
+    .theme-dark .timeline-item,
+    .theme-dark .planet-card,
+    .theme-dark .result-card,
+    .theme-dark .info-card,
+    .theme-dark .side-nav,
+    .theme-dark .bottom-nav,
+    .theme-dark .modal-content {
+      background: var(--darkest-bg);
+      color: var(--text-light);
+    }
+
+    .theme-dark .card-title,
+    .theme-dark .planet-name,
+    .theme-dark .current-hour-hero .planet-name,
+    .theme-dark .result-title,
+    .theme-dark .side-nav-logo {
+      color: var(--gold);
+    }
+
+    .theme-dark .good-for-text,
+    .theme-dark .result-value {
+      color: var(--pink);
+    }
+
+    .theme-dark .info-card-label,
+    .theme-dark .timeline-time,
+    .theme-dark .planet-card-label,
+    .theme-dark .result-label {
+      color: #b8b8b8;
+    }
+
+    .theme-dark .info-card-value,
+    .theme-dark .timeline-planet,
+    .theme-dark .planet-card-name,
+    .theme-dark .planet-card-symbol,
+    .theme-dark .current-hour-hero .planet-symbol,
+    .theme-dark .current-hour-hero .planet-name {
+      color: var(--text-light);
+    }
+
+    .theme-dark .side-nav-item,
+    .theme-dark .bottom-nav-item {
+      color: var(--text-light);
+    }
+
+    .theme-dark .side-nav-item.active,
+    .theme-dark .bottom-nav-item.active {
+      color: var(--gold);
+    }
+
+    .theme-dark .progress-fill {
+      background: linear-gradient(90deg, var(--gold) 0%, var(--pink) 100%);
+    }
+
+    .theme-dark .timeline-item,
+    .theme-dark .timeline-item.current {
+      border-left-color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .theme-dark .timeline-item.current {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.1) 0%, var(--darkest-bg) 100%);
+    }
+
+    .theme-dark input,
+    .theme-dark select {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .theme-dark input:focus,
+    .theme-dark select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+    }
+
+    /* Splash Screen */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fadeOut 0.5s ease 2.5s forwards;
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; pointer-events: none; }
+    }
+    .splash-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.4;
+    }
+    .splash-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+    }
+    .splash-logo {
+      font-size: 64px;
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      font-weight: 700;
+      letter-spacing: 8px;
+    }
+    .splash-tagline {
+      font-size: 18px;
+      color: #f5f5f7;
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+      opacity: 0.9;
+    }
+    .splash-loader {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(212, 175, 55, 0.2);
+      border-top-color: var(--gold);
+      border-right-color: var(--pink);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Main App */
+    #app-container {
+      display: none;
+      width: 100%;
+      height: 100%;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .app-layout {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Side Nav (Desktop) */
+    .side-nav {
+      display: none;
+      width: 240px;
+      background: linear-gradient(180deg, var(--light-bg) 0%, #e9ecef 100%);
+      height: 100%;
+      flex-shrink: 0;
+      padding: 28px 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-light);
+    }
+    .theme-dark .side-nav {
+      background: linear-gradient(180deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      border-right: 1px solid rgba(212, 175, 55, 0.1);
+    }
+    .side-nav-header {
+      padding: 0 24px 24px;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .side-nav-logo {
+      font-size: 36px;
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: 4px;
+      font-weight: 700;
+    }
+    .side-nav-tagline {
+      font-size: 12px;
+      color: var(--text-medium);
+      opacity: 0.8;
+      letter-spacing: 1.5px;
+    }
+    .theme-dark .side-nav-tagline {
+      color: #f5f5f7;
+    }
+    .side-nav-item {
+      padding: 16px 24px;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 15px;
+      border-left: 4px solid transparent;
+      font-weight: 500;
+    }
+    .theme-dark .side-nav-item {
+      color: var(--text-light);
+    }
+    .side-nav-item:hover {
+      background: rgba(212, 175, 55, 0.15);
+      border-left-color: var(--gold);
+      padding-left: 28px;
+    }
+    .side-nav-item.active {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.25) 0%, rgba(255, 0, 110, 0.15) 100%);
+      border-left-color: var(--pink);
+      color: var(--gold);
+    }
+    .side-nav-icon {
+      font-size: 20px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    }
+    .page-logo {
+      font-size: 28px;
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* Bottom Nav (Mobile) */
+    .bottom-nav {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(180deg, var(--light-bg) 0%, #e9ecef 100%);
+      padding: 8px 0;
+      justify-content: space-around;
+      z-index: 1000;
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+      border-top: 1px solid var(--border-light);
+    }
+    .theme-dark .bottom-nav {
+      background: linear-gradient(180deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .bottom-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 8px;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 11px;
+      border-top: 3px solid transparent;
+      font-weight: 500;
+    }
+    .theme-dark .bottom-nav-item {
+      color: var(--text-light);
+    }
+    .bottom-nav-item:hover {
+      color: var(--gold);
+    }
+    .bottom-nav-item.active {
+      color: var(--gold);
+      border-top-color: var(--pink);
+      background: rgba(212, 175, 55, 0.1);
+    }
+    .bottom-nav-icon {
+      font-size: 24px;
+    }
+
+    /* Page Sections */
+    .page-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .page-section.active {
+      display: block;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(212, 175, 55, 0.15);
+      color: var(--text-dark);
+    }
+    .theme-dark .card {
+      color: var(--text-light);
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    /* Current Hour Hero */
+    .current-hour-hero {
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      border-radius: 18px;
+      padding: 32px;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(212, 175, 55, 0.2);
+      color: white;
+    }
+    .current-hour-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    .current-hour-hero > * {
+      position: relative;
+      z-index: 1;
+    }
+    .planet-symbol {
+      font-size: 72px;
+      margin-bottom: 16px;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    }
+    .planet-name {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1.5px;
+    }
+    .hour-time {
+      font-size: 16px;
+      opacity: 0.95;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .progress-bar {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--pink) 100%);
+      transition: width 1s linear;
+      border-radius: 8px;
+    }
+    .time-remaining {
+      font-size: 14px;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    .good-for {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(255, 255, 255, 0.15);
+    }
+    .good-for-title {
+      font-size: 14px;
+      opacity: 0.85;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+    .good-for-text {
+      font-size: 16px;
+      color: var(--pink);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    /* Info Grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .info-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      color: var(--text-dark);
+    }
+    .theme-dark .info-card {
+      color: var(--text-light);
+    }
+    .info-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(212, 175, 55, 0.3);
+      border-color: var(--gold);
+    }
+    .info-card-label {
+      font-size: 11px;
+      color: var(--text-medium);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 600;
+    }
+    .theme-dark .info-card-label {
+      color: #b8b8b8;
+    }
+    .info-card-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .info-card-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .timeline-item {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-left: 4px solid var(--gold);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(212, 175, 55, 0.1);
+      color: var(--text-dark);
+    }
+    .theme-dark .timeline-item {
+      color: var(--text-light);
+    }
+    .timeline-item:hover {
+      transform: translateX(4px);
+      box-shadow: 0 5px 18px rgba(212, 175, 55, 0.3);
+      border-left-color: var(--pink);
+    }
+    .timeline-item.current {
+      border-left-color: var(--pink);
+      background: linear-gradient(90deg, rgba(255, 0, 110, 0.2) 0%, var(--card-bg) 100%);
+      box-shadow: 0 0 24px rgba(255, 0, 110, 0.4);
+    }
+    .theme-dark .timeline-item.current {
+      background: linear-gradient(90deg, rgba(255, 0, 110, 0.2) 0%, var(--darkest-bg) 100%);
+    }
+    .timeline-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+      color: var(--gold);
+    }
+    .timeline-content {
+      flex: 1;
+    }
+    .timeline-planet {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .theme-dark .timeline-planet {
+      color: var(--text-light);
+    }
+    .timeline-time {
+      font-size: 13px;
+      color: var(--text-medium);
+      font-weight: 500;
+    }
+    .theme-dark .timeline-time {
+      color: #b8b8b8;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .tab {
+      padding: 12px 20px;
+      background: var(--card-bg);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .theme-dark .tab {
+      color: var(--text-light);
+    }
+    .tab:hover {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      box-shadow: 0 3px 12px rgba(212, 175, 55, 0.3);
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      color: var(--dark-bg);
+      border-color: var(--gold);
+      box-shadow: 0 5px 16px rgba(212, 175, 55, 0.5);
+      border-radius: 12px;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* Planet Cards */
+    .planet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .planet-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      color: var(--text-dark);
+    }
+    .theme-dark .planet-card {
+      color: var(--text-light);
+    }
+    .planet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 36px rgba(212, 175, 55, 0.4);
+      border-color: var(--gold);
+    }
+    .planet-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(212, 175, 55, 0.2);
+    }
+    .planet-card-symbol {
+      font-size: 48px;
+      color: var(--gold);
+    }
+    .planet-card-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .planet-card-info {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-medium);
+    }
+    .theme-dark .planet-card-info {
+      color: #b8b8b8;
+    }
+    .planet-card-detail {
+      margin-bottom: 12px;
+    }
+    .planet-card-label {
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 5px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .theme-dark .planet-card-label {
+      color: var(--text-light);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 8px;
+      letter-spacing: 0.8px;
+    }
+    .form-input, .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      background: white;
+      color: var(--text-dark);
+    }
+    .theme-dark .form-input, .theme-dark .form-select {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.3);
+      background: white;
+    }
+    .theme-dark .form-input:focus, .theme-dark .form-select:focus {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .btn {
+      padding: 14px 28px;
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      color: var(--dark-bg);
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--light-bg) 0%, #e9ecef 100%);
+      color: var(--gold);
+      border: 2px solid var(--gold);
+    }
+    .theme-dark .btn-secondary {
+      background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      color: var(--gold);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, var(--pink) 0%, #cc0058 100%);
+      color: white;
+    }
+
+    /* Results */
+    .result-card {
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      border-radius: 16px;
+      padding: 28px;
+      margin-top: 20px;
+      color: white;
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    .result-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .result-item {
+      margin-bottom: 18px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .result-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+    .result-label {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 600;
+    }
+    .result-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--pink);
+      margin-bottom: 10px;
+      text-shadow: 0 0 16px rgba(255, 0, 110, 0.5);
+    }
+    .result-description {
+      font-size: 15px;
+      line-height: 1.7;
+      opacity: 0.95;
+      color: var(--text-light);
+    }
+    .result-explanation {
+      background: rgba(212, 175, 55, 0.1);
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 10px;
+      border-left: 4px solid var(--gold);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 85%;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: var(--shadow);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      color: var(--text-dark);
+    }
+    .theme-dark .modal-content {
+      background: linear-gradient(135deg, var(--dark-bg) 0%, var(--darker-bg) 100%);
+      color: var(--text-light);
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 32px;
+      cursor: pointer;
+      color: var(--text-medium);
+      transition: color 0.3s ease;
+      font-weight: 300;
+    }
+    .theme-dark .modal-close {
+      color: #b8b8b8;
+    }
+    .modal-close:hover {
+      color: var(--pink);
+    }
+    .modal-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    .modal-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text-medium);
+      margin-bottom: 16px;
+    }
+    .theme-dark .modal-text {
+      color: #b8b8b8;
+    }
+    .modal-credits {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-medium);
+    }
+    .theme-dark .modal-credits {
+      color: #b8b8b8;
+      border-top-color: rgba(212, 175, 55, 0.2);
+    }
+    .modal-credits a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    /* Settings Items */
+    .settings-item {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      color: var(--text-dark);
+    }
+    .theme-dark .settings-item {
+      color: var(--text-light);
+    }
+    .settings-item:hover {
+      box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+      transform: translateX(3px);
+      border-color: var(--gold);
+    }
+    .settings-item-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .theme-dark .settings-item-label {
+      color: var(--text-light);
+    }
+    .settings-item-value {
+      font-size: 14px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .settings-item-arrow {
+      font-size: 20px;
+      color: var(--gold);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 56px;
+      height: 28px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+    .theme-dark .toggle-switch {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .toggle-switch.active {
+      background: linear-gradient(135deg, var(--gold) 0%, #f4d03f 100%);
+      border-color: var(--gold);
+    }
+    .toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    .toggle-switch.active .toggle-slider {
+      transform: translateX(26px);
+    }
+
+    /* History */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .history-item {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      color: var(--text-dark);
+    }
+    .theme-dark .history-item {
+      color: var(--text-light);
+    }
+    .history-item-content {
+      flex: 1;
+    }
+    .history-item-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 5px;
+    }
+    .theme-dark .history-item-title {
+      color: var(--text-light);
+    }
+    .history-item-date {
+      font-size: 12px;
+      color: var(--text-medium);
+    }
+    .theme-dark .history-item-date {
+      color: #b8b8b8;
+    }
+    .history-item-delete {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--pink) 0%, #cc0058 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .history-item-delete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 12px rgba(255, 0, 110, 0.5);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-medium);
+    }
+    .theme-dark .empty-state {
+      color: #b8b8b8;
+    }
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+    .empty-state-text {
+      font-size: 16px;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .side-nav {
+        display: block;
+      }
+      .bottom-nav {
+        display: none;
+      }
+      .main-content {
+        padding: 36px;
+        padding-bottom: 36px;
+      }
+      .current-hour-hero {
+        padding: 48px;
+      }
+      .planet-symbol {
+        font-size: 100px;
+      }
+      .planet-name {
+        font-size: 48px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .splash-logo {
+        font-size: 48px;
+      }
+      .main-content {
+        padding: 16px;
+        padding-bottom: 90px;
+      }
+      .current-hour-hero {
+        padding: 24px;
+      }
+      .planet-symbol {
+        font-size: 56px;
+      }
+      .planet-name {
+        font-size: 28px;
+      }
+      .card {
+        padding: 18px;
+      }
+      .page-header {
+        padding: 0 16px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <svg class="splash-bg" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="starGradient">
+          <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#d4af37;stop-opacity:0" />
+        </radialGradient>
+      </defs>
+      <!-- Stars -->
+      <circle cx="100" cy="100" r="2" fill="url(#starGradient)" />
+      <circle cx="300" cy="200" r="1.5" fill="url(#starGradient)" />
+      <circle cx="500" cy="150" r="2" fill="url(#starGradient)" />
+      <circle cx="700" cy="250" r="1" fill="url(#starGradient)" />
+      <circle cx="900" cy="180" r="1.5" fill="url(#starGradient)" />
+      <circle cx="200" cy="400" r="1" fill="url(#starGradient)" />
+      <circle cx="600" cy="450" r="2" fill="url(#starGradient)" />
+      <circle cx="800" cy="500" r="1.5" fill="url(#starGradient)" />
+      <circle cx="150" cy="650" r="1" fill="url(#starGradient)" />
+      <circle cx="400" cy="700" r="2" fill="url(#starGradient)" />
+      <circle cx="750" cy="750" r="1.5" fill="url(#starGradient)" />
+      <circle cx="250" cy="850" r="1" fill="url(#starGradient)" />
+      <circle cx="550" cy="900" r="2" fill="url(#starGradient)" />
+      <circle cx="850" cy="850" r="1" fill="url(#starGradient)" />
+    </svg>
+    <div class="splash-content">
+      <div class="splash-logo" id="splash-logo">♃ HORA</div>
+      <div class="splash-tagline" id="splash-tagline">Wisdom in every hour</div>
+      <div class="splash-loader"></div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app-container">
+    <div class="app-layout">
+      <!-- Side Navigation (Desktop) -->
+      <nav class="side-nav">
+        <div class="side-nav-header">
+          <div class="side-nav-logo">♃ HORA</div>
+          <div class="side-nav-tagline">Wisdom in every hour</div>
+        </div>
+        <div class="side-nav-item active" data-page="now">
+          <span class="side-nav-icon">◐</span>
+          <span>Now</span>
+        </div>
+        <div class="side-nav-item" data-page="schedule">
+          <span class="side-nav-icon">◷</span>
+          <span>Schedule</span>
+        </div>
+        <div class="side-nav-item" data-page="tools">
+          <span class="side-nav-icon">✦</span>
+          <span>Cosmic Tools</span>
+        </div>
+        <div class="side-nav-item" data-page="settings">
+          <span class="side-nav-icon">⚙</span>
+          <span>Settings</span>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- NOW PAGE -->
+        <section id="page-now" class="page-section active">
+          <div class="page-header">
+            <div class="page-logo">♃</div>
+            <div class="page-title">Now</div>
+          </div>
+          <div class="current-hour-hero">
+            <div class="planet-symbol" id="current-planet-symbol">☉</div>
+            <div class="planet-name" id="current-planet-name">Sun</div>
+            <div class="hour-time" id="current-hour-time">10:30 AM - 11:45 AM</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="hour-progress" style="width: 45%"></div>
+            </div>
+            <div class="time-remaining" id="time-remaining">42 minutes remaining</div>
+            <div class="good-for">
+              <div class="good-for-title">Perfect For:</div>
+              <div class="good-for-text" id="good-for-text">Leadership, vitality, success, authority</div>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="info-card">
+              <div class="info-card-icon">☀</div>
+              <div class="info-card-label">Day Ruler</div>
+              <div class="info-card-value" id="day-ruler">Sun</div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">☽</div>
+              <div class="info-card-label">Moon Phase</div>
+              <div class="info-card-value" id="moon-phase">Waxing Gibbous</div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">↑</div>
+              <div class="info-card-label">Sunrise</div>
+              <div class="info-card-value" id="sunrise-time">6:42 AM</div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">↓</div>
+              <div class="info-card-label">Sunset</div>
+              <div class="info-card-value" id="sunset-time">5:18 PM</div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">☾</div>
+              <div class="info-card-label">Moon Sign</div>
+              <div class="info-card-value" id="moon-sign-now">Aries</div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-icon">∅</div>
+              <div class="info-card-label">Void of Course</div>
+              <div class="info-card-value" id="void-status">No</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Next Planetary Hours</div>
+            <div class="timeline" id="next-hours">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Current Planetary Transits</div>
+            <div id="transits-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- SCHEDULE PAGE -->
+        <section id="page-schedule" class="page-section">
+          <div class="page-header">
+            <div class="page-logo">♃</div>
+            <div class="page-title">Schedule</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Full Planetary Hours Schedule</div>
+            <div class="form-group">
+              <label class="form-label" for="schedule-date">Select Date</label>
+              <input type="date" id="schedule-date" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Find Next Hour</label>
+              <select id="find-next-planet" class="form-select">
+                <option value="">-- Select Planet --</option>
+                <option value="Sun">Sun</option>
+                <option value="Moon">Moon</option>
+                <option value="Mars">Mars</option>
+                <option value="Mercury">Mercury</option>
+                <option value="Jupiter">Jupiter</option>
+                <option value="Venus">Venus</option>
+                <option value="Saturn">Saturn</option>
+              </select>
+              <button class="btn" id="find-next-btn" style="margin-top: 10px;">Find Next</button>
+              <div id="find-next-result" style="margin-top: 12px; color: var(--gold); font-weight: 600;"></div>
+            </div>
+            <div class="timeline" id="full-schedule">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- COSMIC TOOLS PAGE -->
+        <section id="page-tools" class="page-section">
+          <div class="page-header">
+            <div class="page-logo">♃</div>
+            <div class="page-title">Cosmic Tools</div>
+          </div>
+          <div class="tabs">
+            <div class="tab active" data-tab="planets">Planets</div>
+            <div class="tab" data-tab="numerology">Numerology</div>
+            <div class="tab" data-tab="astrology">Astrology</div>
+            <div class="tab" data-tab="tarot">Tarot</div>
+            <div class="tab" data-tab="iching">I Ching</div>
+            <div class="tab" data-tab="moon">Moon Magic</div>
+            <div class="tab" data-tab="biorhythms">Biorhythms</div>
+          </div>
+
+          <!-- PLANETS TAB -->
+          <div class="tab-content active" data-tab-content="planets">
+            <div class="planet-grid" id="planet-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- NUMEROLOGY TAB -->
+          <div class="tab-content" data-tab-content="numerology">
+            <div class="card">
+              <div class="card-title">Numerology Calculator</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">Numerology reveals your life path, destiny, and soul's purpose through the vibrational meaning of numbers derived from your name and birth date.</p>
+              <form id="numerology-form">
+                <div class="form-group">
+                  <label class="form-label" for="num-name">Full Name (as on birth certificate)</label>
+                  <input type="text" id="num-name" class="form-input" placeholder="Enter your full birth name" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="num-dob">Date of Birth</label>
+                  <input type="date" id="num-dob" class="form-input" required>
+                </div>
+                <button type="submit" class="btn" id="calc-numerology-btn">Calculate My Numbers</button>
+              </form>
+              <div id="numerology-results"></div>
+            </div>
+          </div>
+
+          <!-- ASTROLOGY TAB -->
+          <div class="tab-content" data-tab-content="astrology">
+            <div class="card">
+              <div class="card-title">Astrology Calculator</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">Discover your Sun sign and cosmic blueprint based on your birth details. For a complete chart, provide time and location.</p>
+              <form id="astrology-form">
+                <div class="form-group">
+                  <label class="form-label" for="astro-dob">Date of Birth</label>
+                  <input type="date" id="astro-dob" class="form-input" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="astro-time">Birth Time (Optional)</label>
+                  <input type="time" id="astro-time" class="form-input">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="astro-location">Birth Location (Optional)</label>
+                  <input type="text" id="astro-location" class="form-input" placeholder="City, Country">
+                </div>
+                <button type="submit" class="btn" id="calc-astrology-btn">Reveal My Cosmic Blueprint</button>
+              </form>
+              <div id="astrology-results"></div>
+            </div>
+          </div>
+
+          <!-- TAROT TAB -->
+          <div class="tab-content" data-tab-content="tarot">
+            <div class="card">
+              <div class="card-title">Tarot Reading</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">Draw guidance from the 78-card Tarot deck. Each reading provides insight into your current path.</p>
+              <div class="form-group">
+                <label class="form-label">Choose Your Spread</label>
+                <select id="tarot-spread" class="form-select">
+                  <option value="daily">Daily Card - Quick guidance for today</option>
+                  <option value="three">3-Card Spread - Past, Present, Future</option>
+                  <option value="celtic">Celtic Cross - Deep 10-card reading</option>
+                </select>
+              </div>
+              <button class="btn" id="draw-tarot-btn">Draw Cards</button>
+              <div id="tarot-results"></div>
+            </div>
+          </div>
+
+          <!-- I CHING TAB -->
+          <div class="tab-content" data-tab-content="iching">
+            <div class="card">
+              <div class="card-title">I Ching Oracle</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">The I Ching (Book of Changes) offers profound wisdom through 64 hexagrams. Cast your coins for guidance.</p>
+              <button class="btn" id="cast-iching-btn">Cast Hexagram</button>
+              <div id="iching-results"></div>
+            </div>
+          </div>
+
+          <!-- MOON MAGIC TAB -->
+          <div class="tab-content" data-tab-content="moon">
+            <div class="card">
+              <div class="card-title">Moon Magic & Lunar Wisdom</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">The Moon governs emotions, intuition, and the subconscious. Align your activities with its cycles.</p>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-card-icon">☽</div>
+                  <div class="info-card-label">Current Phase</div>
+                  <div class="info-card-value" id="moon-current-phase">Waxing Gibbous</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-card-icon">◐</div>
+                  <div class="info-card-label">Illumination</div>
+                  <div class="info-card-value" id="moon-illumination">78%</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-card-icon">♈</div>
+                  <div class="info-card-label">Moon Sign</div>
+                  <div class="info-card-value" id="moon-sign">Aries</div>
+                </div>
+                <div class="info-card">
+                  <div class="info-card-icon">∅</div>
+                  <div class="info-card-label">Void of Course</div>
+                  <div class="info-card-value" id="moon-void">No</div>
+                </div>
+              </div>
+              <div id="moon-guidance"></div>
+            </div>
+          </div>
+
+          <!-- BIORHYTHMS TAB -->
+          <div class="tab-content" data-tab-content="biorhythms">
+            <div class="card">
+              <div class="card-title">Biorhythms Calculator</div>
+              <p style="color: var(--text-medium); margin-bottom: 20px; line-height: 1.7;">Biorhythms are biological cycles that influence your physical, emotional, and intellectual states throughout life.</p>
+              <form id="biorhythms-form">
+                <div class="form-group">
+                  <label class="form-label" for="bio-dob">Date of Birth</label>
+                  <input type="date" id="bio-dob" class="form-input" required>
+                </div>
+                <button type="submit" class="btn" id="calc-biorhythms-btn">Calculate My Biorhythms</button>
+              </form>
+              <div id="biorhythms-results"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS PAGE -->
+        <section id="page-settings" class="page-section">
+          <div class="page-header">
+            <div class="page-logo">♃</div>
+            <div class="page-title">Settings</div>
+          </div>
+          <div class="card">
+            <div class="card-title">Timezone Settings</div>
+            <p style="color: var(--text-medium); margin-bottom: 16px; line-height: 1.7;">Select your timezone for accurate planetary hour calculations. Planetary hours depend on local sunrise and sunset.</p>
+            <div class="form-group">
+              <label class="form-label" for="timezone-select">Select Your Timezone</label>
+              <select id="timezone-select" class="form-select">
+                <option value="-12">UTC-12:00 (Baker Island)</option>
+                <option value="-11">UTC-11:00 (American Samoa)</option>
+                <option value="-10">UTC-10:00 (Hawaii)</option>
+                <option value="-9">UTC-09:00 (Alaska)</option>
+                <option value="-8">UTC-08:00 (Pacific Time)</option>
+                <option value="-7">UTC-07:00 (Mountain Time)</option>
+                <option value="-6">UTC-06:00 (Central Time)</option>
+                <option value="-5">UTC-05:00 (Eastern Time)</option>
+                <option value="-4">UTC-04:00 (Atlantic Time)</option>
+                <option value="-3">UTC-03:00 (Buenos Aires)</option>
+                <option value="-2">UTC-02:00 (Mid-Atlantic)</option>
+                <option value="-1">UTC-01:00 (Azores)</option>
+                <option value="0">UTC+00:00 (London, GMT)</option>
+                <option value="1" selected>UTC+01:00 (Lagos, Nigeria)</option>
+                <option value="2">UTC+02:00 (Cairo, Athens)</option>
+                <option value="3">UTC+03:00 (Moscow, Istanbul)</option>
+                <option value="4">UTC+04:00 (Dubai)</option>
+                <option value="5">UTC+05:00 (Pakistan)</option>
+                <option value="6">UTC+06:00 (Bangladesh)</option>
+                <option value="7">UTC+07:00 (Bangkok)</option>
+                <option value="8">UTC+08:00 (Singapore, Beijing)</option>
+                <option value="9">UTC+09:00 (Tokyo, Seoul)</option>
+                <option value="10">UTC+10:00 (Sydney)</option>
+                <option value="11">UTC+11:00 (Solomon Islands)</option>
+                <option value="12">UTC+12:00 (New Zealand)</option>
+              </select>
+            </div>
+            <div id="current-timezone-display" style="margin-top: 12px; font-size: 14px; color: var(--gold); font-weight: 600;"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Preferences</div>
+            <div class="settings-item" id="time-format-setting">
+              <div>
+                <div class="settings-item-label">Time Format</div>
+                <div class="settings-item-value" id="time-format-value">12-hour</div>
+              </div>
+              <div class="toggle-switch" id="time-format-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="settings-item" id="theme-setting">
+              <div>
+                <div class="settings-item-label">Theme Mode</div>
+                <div class="settings-item-value" id="theme-value">Day Mode</div>
+              </div>
+              <div class="toggle-switch active" id="theme-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+            <div class="settings-item" id="notifications-setting">
+              <div>
+                <div class="settings-item-label">Hour Change Notifications</div>
+                <div class="settings-item-value" id="notifications-value">Disabled</div>
+              </div>
+              <div class="toggle-switch" id="notifications-toggle">
+                <div class="toggle-slider"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Personal Info (Optional)</div>
+            <p style="color: var(--text-medium); margin-bottom: 16px; line-height: 1.7;">Save your name and date of birth for quicker calculations in tools.</p>
+            <div class="form-group">
+              <label class="form-label" for="personal-name">Your Name</label>
+              <input type="text" id="personal-name" class="form-input" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="personal-dob">Date of Birth</label>
+              <input type="date" id="personal-dob" class="form-input">
+            </div>
+            <button class="btn btn-secondary" id="save-personal-btn">Save Personal Info</button>
+            <button class="btn btn-danger" id="clear-personal-btn" style="margin-top: 12px;">Clear Saved Data</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">History & Data</div>
+            <button class="btn btn-secondary" id="view-history-btn">View Calculation History</button>
+            <button class="btn btn-danger" id="clear-history-btn" style="margin-top: 16px;">Clear All History</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">App Information</div>
+            <div class="settings-item" id="about-app-btn">
+              <div class="settings-item-label">About Hora</div>
+              <div class="settings-item-arrow">›</div>
+            </div>
+            <div class="settings-item" id="privacy-policy-btn">
+              <div class="settings-item-label">Privacy Policy</div>
+              <div class="settings-item-arrow">›</div>
+            </div>
+            <div class="settings-item" id="terms-btn">
+              <div class="settings-item-label">Terms of Use</div>
+              <div class="settings-item-arrow">›</div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Bottom Navigation (Mobile) -->
+      <nav class="bottom-nav">
+        <div class="bottom-nav-item active" data-page="now">
+          <div class="bottom-nav-icon">◐</div>
+          <div>Now</div>
+        </div>
+        <div class="bottom-nav-item" data-page="schedule">
+          <div class="bottom-nav-icon">◷</div>
+          <div>Schedule</div>
+        </div>
+        <div class="bottom-nav-item" data-page="tools">
+          <div class="bottom-nav-icon">✦</div>
+          <div>Tools</div>
+        </div>
+        <div class="bottom-nav-item" data-page="settings">
+          <div class="bottom-nav-icon">⚙</div>
+          <div>Settings</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="about-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('about-modal')">×</div>
+      <div class="modal-title">About Hora</div>
+      <p class="modal-text">Hora is your comprehensive guide to cosmic timing and mystical wisdom. The app calculates planetary hours based on ancient astrological traditions, helping you align your activities with celestial energies.</p>
+      <p class="modal-text">Planetary hours divide each day into 24 segments, with each hour ruled by one of the seven classical planets. Each planet brings its own unique energy and is best suited for specific activities.</p>
+      <p class="modal-text">Beyond planetary hours, Hora offers numerology calculations, astrology insights, tarot readings, I Ching divination, moon magic guidance, and biorhythm tracking — all designed to help you navigate life with cosmic awareness.</p>
+      <div class="modal-credits">
+        <p style="font-size: 16px; margin-bottom: 10px;">✨ Crafted with cosmic energy by</p>
+        <p style="font-size: 18px; font-weight: 700;">
+          <a href="https://sisco-ask.vercel.app" target="_blank" rel="noopener noreferrer">Sisqo</a>
+        </p>
+        <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">Version 1.0.0 • © 2024</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="privacy-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('privacy-modal')">×</div>
+      <div class="modal-title">Privacy Policy</div>
+      <p class="modal-text">Your privacy is important to us. Hora stores all your data locally within your browser. We do not collect, transmit, or share any of your personal information with third parties.</p>
+      <p class="modal-text">Timezone data is only used to calculate accurate sunrise and sunset times for planetary hour calculations. You can change your timezone at any time in settings.</p>
+      <p class="modal-text">All calculator results, readings, and preferences are stored securely in your local storage and remain completely private to you.</p>
+    </div>
+  </div>
+
+  <div id="terms-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('terms-modal')">×</div>
+      <div class="modal-title">Terms of Use</div>
+      <p class="modal-text">By using Hora, you agree to use the app for personal guidance and entertainment purposes. The information provided is based on traditional astrological, numerological, and divinatory systems.</p>
+      <p class="modal-text">Hora is not a substitute for professional advice in matters of health, finance, legal issues, or other important life decisions. Always consult qualified professionals for serious matters.</p>
+      <p class="modal-text">The app's calculations are based on astronomical data and traditional interpretations. While we strive for accuracy, we cannot guarantee the precision of all calculations or the applicability of interpretations to your specific situation.</p>
+    </div>
+  </div>
+
+  <div id="history-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('history-modal')">×</div>
+      <div class="modal-title">Calculation History</div>
+      <div id="history-list" class="history-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div id="tutorial-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-close" onclick="closeModal('tutorial-modal')">×</div>
+      <div class="modal-title">Welcome to Hora</div>
+      <p class="modal-text">Hora helps you align with cosmic timing and access mystical wisdom. Here's how to get started:</p>
+      <p class="modal-text"><strong>Now:</strong> View the current planetary hour and what it's best for. See upcoming hours and planetary transits.</p>
+      <p class="modal-text"><strong>Schedule:</strong> Browse the full 24-hour planetary schedule for any date. Use the "Find Next" feature to locate specific planetary hours.</p>
+      <p class="modal-text"><strong>Cosmic Tools:</strong> Access numerology, astrology, tarot, I Ching, moon magic, and biorhythms calculators with detailed interpretations.</p>
+      <p class="modal-text"><strong>Settings:</strong> Set your timezone (Nigeria is default), manage preferences, save personal info, and view history.</p>
+      <button class="btn" onclick="closeModal('tutorial-modal')">Begin Your Journey</button>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let appState = {
+      timezoneOffset: 1, // UTC+1 for Nigeria
+      timeFormat: '12',
+      theme: 'light', // Light mode as default
+      notifications: false,
+      currentDate: new Date(),
+      personalName: '',
+      personalDOB: ''
+    };
+
+    // Initialize theme
+    document.body.classList.add('theme-light');
+
+    let allRecords = JSON.parse(localStorage.getItem('horaHistory') || '[]');
+
+    // Planet data with full details
+    const planets = [
+      {
+        name: 'Sun',
+        symbol: '☉',
+        day: 'Sunday',
+        keywords: 'Leadership, vitality, success, authority, confidence, health',
+        rulership: 'Leo',
+        exaltation: 'Aries',
+        detriment: 'Aquarius',
+        fall: 'Libra',
+        element: 'Fire',
+        metal: 'Gold',
+        color: 'Gold, Yellow, Orange',
+        herbs: 'Rosemary, marigold, sunflower',
+        stones: 'Ruby, amber, citrine',
+        activities: 'Career advancement, leadership roles, health matters, seeking recognition, boosting confidence, important meetings, public speaking',
+        deities: 'Apollo, Ra, Helios, Surya',
+        bestTimes: 'Sunday, midday, during Leo hours',
+        description: 'The Sun represents your core identity, ego, and life force. It governs vitality, creativity, and self-expression.'
+      },
+      {
+        name: 'Moon',
+        symbol: '☽',
+        day: 'Monday',
+        keywords: 'Emotions, intuition, dreams, home, family, psychic work',
+        rulership: 'Cancer',
+        exaltation: 'Taurus',
+        detriment: 'Capricorn',
+        fall: 'Scorpio',
+        element: 'Water',
+        metal: 'Silver',
+        color: 'Silver, White, Light Blue',
+        herbs: 'Chamomile, willow, jasmine',
+        stones: 'Pearl, moonstone, selenite',
+        activities: 'Emotional healing, dream work, family matters, intuitive development, home and domestic issues, meditation, psychic practices',
+        deities: 'Diana, Selene, Artemis, Chandra',
+        bestTimes: 'Monday, nighttime, during Cancer hours',
+        description: 'The Moon governs emotions, instincts, and the subconscious mind. It influences your inner world and emotional responses.'
+      },
+      {
+        name: 'Mars',
+        symbol: '♂',
+        day: 'Tuesday',
+        keywords: 'Action, courage, conflict, passion, energy, strength',
+        rulership: 'Aries, Scorpio',
+        exaltation: 'Capricorn',
+        detriment: 'Libra, Taurus',
+        fall: 'Cancer',
+        element: 'Fire',
+        metal: 'Iron',
+        color: 'Red, Scarlet',
+        herbs: 'Nettle, ginger, garlic',
+        stones: 'Bloodstone, garnet, red jasper',
+        activities: 'Physical exercise, competitive activities, confronting challenges, passionate pursuits, protection magic, assertiveness, sports',
+        deities: 'Mars, Ares, Tyr, Mangala',
+        bestTimes: 'Tuesday, dawn, during Aries/Scorpio hours',
+        description: 'Mars represents drive, ambition, and warrior energy. It governs action, desire, and the will to overcome obstacles.'
+      },
+      {
+        name: 'Mercury',
+        symbol: '☿',
+        day: 'Wednesday',
+        keywords: 'Communication, intellect, travel, commerce, learning',
+        rulership: 'Gemini, Virgo',
+        exaltation: 'Virgo',
+        detriment: 'Sagittarius, Pisces',
+        fall: 'Pisces',
+        element: 'Air',
+        metal: 'Mercury (Quicksilver)',
+        color: 'Orange, Light Blue',
+        herbs: 'Lavender, mint, fennel',
+        stones: 'Agate, citrine, fluorite',
+        activities: 'Writing, studying, business deals, communication, short trips, learning new skills, contracts, negotiations',
+        deities: 'Mercury, Hermes, Thoth, Budha',
+        bestTimes: 'Wednesday, morning, during Gemini/Virgo hours',
+        description: 'Mercury governs communication, thinking, and information exchange. It influences how you process and share ideas.'
+      },
+      {
+        name: 'Jupiter',
+        symbol: '♃',
+        day: 'Thursday',
+        keywords: 'Expansion, abundance, wisdom, luck, growth, prosperity',
+        rulership: 'Sagittarius, Pisces',
+        exaltation: 'Cancer',
+        detriment: 'Gemini, Virgo',
+        fall: 'Capricorn',
+        element: 'Fire',
+        metal: 'Tin',
+        color: 'Purple, Royal Blue',
+        herbs: 'Sage, clove, nutmeg',
+        stones: 'Amethyst, lapis lazuli, turquoise',
+        activities: 'Financial growth, legal matters, higher education, spiritual development, seeking opportunities, long-term planning, philosophy',
+        deities: 'Jupiter, Zeus, Thor, Brihaspati',
+        bestTimes: 'Thursday, noon, during Sagittarius/Pisces hours',
+        description: 'Jupiter represents expansion, optimism, and good fortune. It governs growth, wisdom, and philosophical understanding.'
+      },
+      {
+        name: 'Venus',
+        symbol: '♀',
+        day: 'Friday',
+        keywords: 'Love, beauty, art, pleasure, harmony, relationships',
+        rulership: 'Taurus, Libra',
+        exaltation: 'Pisces',
+        detriment: 'Scorpio, Aries',
+        fall: 'Virgo',
+        element: 'Earth',
+        metal: 'Copper',
+        color: 'Green, Pink',
+        herbs: 'Rose, violet, yarrow',
+        stones: 'Emerald, rose quartz, jade',
+        activities: 'Romance, artistic pursuits, social gatherings, beauty treatments, cultivating harmony, music, creative projects, partnerships',
+        deities: 'Venus, Aphrodite, Freya, Shukra',
+        bestTimes: 'Friday, evening, during Taurus/Libra hours',
+        description: 'Venus governs love, beauty, and values. It influences relationships, aesthetics, and what brings you pleasure.'
+      },
+      {
+        name: 'Saturn',
+        symbol: '♄',
+        day: 'Saturday',
+        keywords: 'Structure, discipline, karma, time, boundaries, wisdom',
+        rulership: 'Capricorn, Aquarius',
+        exaltation: 'Libra',
+        detriment: 'Cancer, Leo',
+        fall: 'Aries',
+        element: 'Earth',
+        metal: 'Lead',
+        color: 'Black, Dark Blue, Grey',
+        herbs: 'Comfrey, horsetail, patchouli',
+        stones: 'Onyx, obsidian, hematite',
+        activities: 'Long-term planning, discipline, karmic work, setting boundaries, serious study, organization, responsibility, endings',
+        deities: 'Saturn, Cronus, Kronos, Shani',
+        bestTimes: 'Saturday, night, during Capricorn/Aquarius hours',
+        description: 'Saturn represents structure, responsibility, and life lessons. It governs discipline, limitations, and karmic patterns.'
+      }
+    ];
+
+    // Planetary hour sequence (Chaldean order)
+    const planetarySequence = ['Saturn', 'Jupiter', 'Mars', 'Sun', 'Venus', 'Mercury', 'Moon'];
+
+    // Day rulers
+    const dayRulers = {
+      0: 'Sun',    // Sunday
+      1: 'Moon',   // Monday
+      2: 'Mars',   // Tuesday
+      3: 'Mercury', // Wednesday
+      4: 'Jupiter', // Thursday
+      5: 'Venus',  // Friday
+      6: 'Saturn'  // Saturday
+    };
+
+    // Tarot deck (Major Arcana only for simplicity)
+    const tarotDeck = [
+      { name: 'The Fool', symbol: '0', meaning: 'New beginnings, innocence, spontaneity, free spirit. The Fool represents unlimited potential and the courage to take a leap of faith into the unknown.' },
+      { name: 'The Magician', symbol: 'I', meaning: 'Manifestation, resourcefulness, power, inspired action. The Magician shows you have all the tools needed to manifest your desires into reality.' },
+      { name: 'The High Priestess', symbol: 'II', meaning: 'Intuition, sacred knowledge, divine feminine, subconscious. She urges you to trust your inner voice and explore the mysteries within.' },
+      { name: 'The Empress', symbol: 'III', meaning: 'Femininity, beauty, nature, nurturing, abundance. The Empress represents fertility, creativity, and the nurturing of ideas and relationships.' },
+      { name: 'The Emperor', symbol: 'IV', meaning: 'Authority, structure, control, fatherhood. The Emperor brings order, stability, and the power to create lasting foundations.' },
+      { name: 'The Hierophant', symbol: 'V', meaning: 'Spiritual wisdom, tradition, conformity, morality. He represents established beliefs, education, and seeking guidance from tradition.' },
+      { name: 'The Lovers', symbol: 'VI', meaning: 'Love, harmony, relationships, values alignment. This card speaks of deep connections, choices in love, and alignment of values.' },
+      { name: 'The Chariot', symbol: 'VII', meaning: 'Control, willpower, success, determination. The Chariot represents victory through focus, discipline, and unwavering determination.' },
+      { name: 'Strength', symbol: 'VIII', meaning: 'Courage, persuasion, influence, compassion. True strength comes from inner courage, patience, and compassionate control.' },
+      { name: 'The Hermit', symbol: 'IX', meaning: 'Soul searching, introspection, inner guidance. The Hermit calls for solitude, reflection, and seeking wisdom from within.' },
+      { name: 'Wheel of Fortune', symbol: 'X', meaning: 'Good luck, karma, life cycles, destiny. The Wheel reminds us that life moves in cycles and change is the only constant.' },
+      { name: 'Justice', symbol: 'XI', meaning: 'Justice, fairness, truth, cause and effect. This card represents karmic balance, legal matters, and the consequences of actions.' },
+      { name: 'The Hanged Man', symbol: 'XII', meaning: 'Pause, surrender, letting go, new perspective. Sometimes you must surrender and see things from a completely different angle.' },
+      { name: 'Death', symbol: 'XIII', meaning: 'Endings, transformation, transition, letting go. Death represents necessary endings that make way for powerful new beginnings.' },
+      { name: 'Temperance', symbol: 'XIV', meaning: 'Balance, moderation, patience, purpose. Temperance teaches the art of balance, patience, and finding the middle path.' },
+      { name: 'The Devil', symbol: 'XV', meaning: 'Shadow self, attachment, addiction, restriction. The Devil reveals unhealthy attachments and invites you to break free from bondage.' },
+      { name: 'The Tower', symbol: 'XVI', meaning: 'Sudden change, upheaval, chaos, revelation. The Tower brings necessary destruction of false structures to reveal truth.' },
+      { name: 'The Star', symbol: 'XVII', meaning: 'Hope, faith, purpose, renewal, spirituality. The Star brings hope, healing, and renewed faith after difficult times.' },
+      { name: 'The Moon', symbol: 'XVIII', meaning: 'Illusion, fear, anxiety, subconscious, intuition. The Moon reveals hidden fears and illusions while deepening intuitive powers.' },
+      { name: 'The Sun', symbol: 'XIX', meaning: 'Positivity, fun, warmth, success, vitality. The Sun brings joy, success, clarity, and the warmth of achievement.' },
+      { name: 'Judgement', symbol: 'XX', meaning: 'Judgement, rebirth, inner calling, absolution. Judgement calls for self-reflection, forgiveness, and answering your higher calling.' },
+      { name: 'The World', symbol: 'XXI', meaning: 'Completion, accomplishment, travel, fulfillment. The World represents completion of a cycle and the achievement of wholeness.' }
+    ];
+
+    // I Ching hexagrams
+    const iChingHexagrams = [
+      { number: 1, name: 'The Creative', meaning: 'Heaven above, Heaven below. Pure yang energy represents the creative force of the universe. This is a time of great power and potential. Take bold action with confidence.' },
+      { number: 2, name: 'The Receptive', meaning: 'Earth above, Earth below. Pure yin energy represents receptivity and devotion. Success comes through yielding, patience, and allowing things to unfold naturally.' },
+      { number: 3, name: 'Difficulty at the Beginning', meaning: 'Water above, Thunder below. Initial challenges require patience and perseverance. Like a plant breaking through soil, growth requires effort. Seek help from those with experience.' },
+      { number: 4, name: 'Youthful Folly', meaning: 'Mountain above, Water below. Inexperience and naivety are present. This is a time for learning and seeking guidance. The student must be sincere and the teacher patient.' },
+      { number: 5, name: 'Waiting (Nourishment)', meaning: 'Water above, Heaven below. Patience is required. Like clouds gathering before rain, trust in divine timing. Nourish yourself while you wait.' },
+      { number: 6, name: 'Conflict', meaning: 'Heaven above, Water below. Disputes and tension arise. Seek peaceful resolution through compromise. Avoid escalation and consider mediation.' },
+      { number: 7, name: 'The Army', meaning: 'Earth above, Water below. Discipline, organization, and leadership lead to success. Unite people under a common cause with clear structure.' },
+      { number: 8, name: 'Holding Together', meaning: 'Water above, Earth below. Unity and cooperation bring strength. Build alliances and work together. The bonds you form now will support you.' }
+    ];
+
+    // Helper functions
+    function calculateSunTimes(date, timezoneOffset) {
+      // More accurate sunrise/sunset calculation for Nigeria (approximate)
+      const latitude = 9.0820; // Nigeria latitude
+      const longitude = 8.6753; // Nigeria longitude
+      
+      // Convert to Nigeria time
+      const localDate = new Date(date.getTime() + (timezoneOffset * 60 * 60 * 1000));
+      const dayOfYear = Math.floor((localDate - new Date(localDate.getFullYear(), 0, 0)) / 86400000);
+      
+      // More accurate calculation using approximate formulas
+      const solarNoon = 12 + (longitude / 15) - (timezoneOffset);
+      const declination = 23.45 * Math.sin((2 * Math.PI / 365) * (dayOfYear - 81));
+      const hourAngle = Math.acos(-Math.tan(latitude * Math.PI / 180) * Math.tan(declination * Math.PI / 180)) * 180 / Math.PI;
+      
+      const sunriseHour = solarNoon - (hourAngle / 15);
+      const sunsetHour = solarNoon + (hourAngle / 15);
+      
+      const sunrise = new Date(date);
+      sunrise.setHours(Math.floor(sunriseHour), Math.round((sunriseHour % 1) * 60), 0, 0);
+      
+      const sunset = new Date(date);
+      sunset.setHours(Math.floor(sunsetHour), Math.round((sunsetHour % 1) * 60), 0, 0);
+      
+      return { sunrise, sunset };
+    }
+
+    function calculatePlanetaryHours(date, timezoneOffset) {
+      const { sunrise, sunset } = calculateSunTimes(date, timezoneOffset);
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const { sunrise: nextSunrise } = calculateSunTimes(nextDay, timezoneOffset);
+      
+      const dayLength = sunset - sunrise;
+      const nightLength = nextSunrise - sunset;
+      const dayHourLength = dayLength / 12;
+      const nightHourLength = nightLength / 12;
+      
+      const hours = [];
+      const dayOfWeek = date.getDay();
+      const dayRuler = dayRulers[dayOfWeek];
+      const startIndex = planetarySequence.indexOf(dayRuler);
+
+      // Day hours
+      for (let i = 0; i < 12; i++) {
+        const planetIndex = (startIndex + i) % 7;
+        const planet = planetarySequence[planetIndex];
+        const startTime = new Date(sunrise.getTime() + (i * dayHourLength));
+        const endTime = new Date(sunrise.getTime() + ((i + 1) * dayHourLength));
+        hours.push({ planet, startTime, endTime, isDaytime: true });
+      }
+
+      // Night hours
+      for (let i = 0; i < 12; i++) {
+        const planetIndex = (startIndex + 12 + i) % 7;
+        const planet = planetarySequence[planetIndex];
+        const startTime = new Date(sunset.getTime() + (i * nightHourLength));
+        const endTime = new Date(sunset.getTime() + ((i + 1) * nightHourLength));
+        hours.push({ planet, startTime, endTime, isDaytime: false });
+      }
+
+      return hours;
+    }
+
+    function getCurrentPlanetaryHour(hours) {
+      const now = new Date();
+      return hours.find(hour => now >= hour.startTime && now < hour.endTime);
+    }
+
+    function formatTime(date, format = '12') {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      if (format === '24') {
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      } else {
+        const period = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+      }
+    }
+
+    function getPlanetData(planetName) {
+      return planets.find(p => p.name === planetName);
+    }
+
+    function calculateMoonPhase(date) {
+      // More accurate moon phase calculation
+      const LUNAR_CYCLE = 29.5305882;
+      const knownNewMoon = new Date('2024-01-11'); // Known new moon date
+      const diffTime = Math.abs(date - knownNewMoon);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const phase = (diffDays % LUNAR_CYCLE) / LUNAR_CYCLE;
+      
+      let phaseName, illumination;
+      if (phase < 0.03 || phase > 0.97) {
+        phaseName = 'New Moon';
+        illumination = Math.round((1 - Math.abs(phase * 2 - 1)) * 5);
+      } else if (phase < 0.22) {
+        phaseName = 'Waxing Crescent';
+        illumination = Math.round(phase * 100);
+      } else if (phase < 0.28) {
+        phaseName = 'First Quarter';
+        illumination = 50;
+      } else if (phase < 0.47) {
+        phaseName = 'Waxing Gibbous';
+        illumination = Math.round(phase * 100);
+      } else if (phase < 0.53) {
+        phaseName = 'Full Moon';
+        illumination = 100;
+      } else if (phase < 0.72) {
+        phaseName = 'Waning Gibbous';
+        illumination = Math.round((1 - phase) * 100);
+      } else if (phase < 0.78) {
+        phaseName = 'Last Quarter';
+        illumination = 50;
+      } else {
+        phaseName = 'Waning Crescent';
+        illumination = Math.round((1 - phase) * 100);
+      }
+      
+      return { phase: phaseName, illumination };
+    }
+
+    function isMoonVoidOfCourse() {
+      // More realistic calculation - moon is void approximately 5-7 times per month
+      const now = new Date();
+      const day = now.getDate();
+      const hour = now.getHours();
+      
+      // Simulate void periods (approximately 2-3 days per month)
+      const voidDays = [3, 6, 10, 15, 19, 23, 27];
+      return voidDays.includes(day) && hour >= 12 && hour <= 18;
+    }
+
+    function reduceToSingleDigit(num) {
+      while (num > 9 && num !== 11 && num !== 22 && num !== 33) {
+        num = num.toString().split('').reduce((a, b) => parseInt(a) + parseInt(b), 0);
+      }
+      return num;
+    }
+
+    function calculateLifePath(dateString) {
+      const digits = dateString.replace(/\D/g, '').split('').map(Number);
+      const sum = digits.reduce((a, b) => a + b, 0);
+      return reduceToSingleDigit(sum);
+    }
+
+    function getLetterValue(letter) {
+      const values = {
+        'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6, 'G': 7, 'H': 8, 'I': 9,
+        'J': 1, 'K': 2, 'L': 3, 'M': 4, 'N': 5, 'O': 6, 'P': 7, 'Q': 8, 'R': 9,
+        'S': 1, 'T': 2, 'U': 3, 'V': 4, 'W': 5, 'X': 6, 'Y': 7, 'Z': 8
+      };
+      return values[letter.toUpperCase()] || 0;
+    }
+
+    function calculateExpression(name) {
+      const sum = name.replace(/[^A-Za-z]/g, '').split('').reduce((acc, letter) => {
+        return acc + getLetterValue(letter);
+      }, 0);
+      return reduceToSingleDigit(sum);
+    }
+
+    function calculateSoulUrge(name) {
+      const vowels = 'AEIOUaeiou';
+      const sum = name.split('').filter(char => vowels.includes(char)).reduce((acc, letter) => {
+        return acc + getLetterValue(letter);
+      }, 0);
+      return reduceToSingleDigit(sum);
+    }
+
+    function calculatePersonality(name) {
+      const vowels = 'AEIOUaeiou';
+      const sum = name.split('').filter(char => !vowels.includes(char) && /[A-Za-z]/.test(char)).reduce((acc, letter) => {
+        return acc + getLetterValue(letter);
+      }, 0);
+      return reduceToSingleDigit(sum);
+    }
+
+    function getZodiacSign(dateString) {
+      const date = new Date(dateString);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const signs = [
+        { name: 'Capricorn', symbol: '♑', start: [12, 22], end: [1, 19], element: 'Earth', modality: 'Cardinal', ruler: 'Saturn' },
+        { name: 'Aquarius', symbol: '♒', start: [1, 20], end: [2, 18], element: 'Air', modality: 'Fixed', ruler: 'Uranus' },
+        { name: 'Pisces', symbol: '♓', start: [2, 19], end: [3, 20], element: 'Water', modality: 'Mutable', ruler: 'Neptune' },
+        { name: 'Aries', symbol: '♈', start: [3, 21], end: [4, 19], element: 'Fire', modality: 'Cardinal', ruler: 'Mars' },
+        { name: 'Taurus', symbol: '♉', start: [4, 20], end: [5, 20], element: 'Earth', modality: 'Fixed', ruler: 'Venus' },
+        { name: 'Gemini', symbol: '♊', start: [5, 21], end: [6, 20], element: 'Air', modality: 'Mutable', ruler: 'Mercury' },
+        { name: 'Cancer', symbol: '♋', start: [6, 21], end: [7, 22], element: 'Water', modality: 'Cardinal', ruler: 'Moon' },
+        { name: 'Leo', symbol: '♌', start: [7, 23], end: [8, 22], element: 'Fire', modality: 'Fixed', ruler: 'Sun' },
+        { name: 'Virgo', symbol: '♍', start: [8, 23], end: [9, 22], element: 'Earth', modality: 'Mutable', ruler: 'Mercury' },
+        { name: 'Libra', symbol: '♎', start: [9, 23], end: [10, 22], element: 'Air', modality: 'Cardinal', ruler: 'Venus' },
+        { name: 'Scorpio', symbol: '♏', start: [10, 23], end: [11, 21], element: 'Water', modality: 'Fixed', ruler: 'Pluto' },
+        { name: 'Sagittarius', symbol: '♐', start: [11, 22], end: [12, 21], element: 'Fire', modality: 'Mutable', ruler: 'Jupiter' }
+      ];
+      for (let sign of signs) {
+        const [startMonth, startDay] = sign.start;
+        const [endMonth, endDay] = sign.end;
+        if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
+          return sign;
+        }
+      }
+      return signs[0];
+    }
+
+    function calculateBiorhythms(birthDate) {
+      const now = new Date();
+      const birth = new Date(birthDate);
+      const daysSinceBirth = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+      const physical = Math.sin((2 * Math.PI * daysSinceBirth) / 23) * 100;
+      const emotional = Math.sin((2 * Math.PI * daysSinceBirth) / 28) * 100;
+      const intellectual = Math.sin((2 * Math.PI * daysSinceBirth) / 33) * 100;
+      return {
+        physical: Math.round(physical),
+        emotional: Math.round(emotional),
+        intellectual: Math.round(intellectual)
+      };
+    }
+
+    function findNextPlanetaryHour(planetName, startDate, timezoneOffset) {
+      let date = new Date(startDate);
+      let attempts = 0;
+      while (attempts < 30) { // Look up to 30 days ahead
+        const hours = calculatePlanetaryHours(date, timezoneOffset);
+        const nextHour = hours.find(h => h.planet === planetName && h.startTime > new Date());
+        if (nextHour) {
+          return nextHour;
+        }
+        date.setDate(date.getDate() + 1);
+        attempts++;
+      }
+      return null;
+    }
+
+    // Rendering functions
+    function updateNowPage() {
+      const hours = calculatePlanetaryHours(appState.currentDate, appState.timezoneOffset);
+      const currentHour = getCurrentPlanetaryHour(hours);
+      if (currentHour) {
+        const planetData = getPlanetData(currentHour.planet);
+        document.getElementById('current-planet-symbol').textContent = planetData.symbol;
+        document.getElementById('current-planet-name').textContent = planetData.name;
+        document.getElementById('current-hour-time').textContent = 
+          `${formatTime(currentHour.startTime, appState.timeFormat)} - ${formatTime(currentHour.endTime, appState.timeFormat)}`;
+        document.getElementById('good-for-text').textContent = planetData.keywords;
+        
+        const now = new Date();
+        const totalDuration = currentHour.endTime - currentHour.startTime;
+        const elapsed = now - currentHour.startTime;
+        const progress = (elapsed / totalDuration) * 100;
+        document.getElementById('hour-progress').style.width = `${Math.min(progress, 100)}%`;
+        
+        const remaining = currentHour.endTime - now;
+        const minutesRemaining = Math.floor(remaining / 60000);
+        document.getElementById('time-remaining').textContent = `${minutesRemaining} minutes remaining`;
+      }
+
+      const dayOfWeek = appState.currentDate.getDay();
+      document.getElementById('day-ruler').textContent = dayRulers[dayOfWeek];
+
+      const moonData = calculateMoonPhase(appState.currentDate);
+      document.getElementById('moon-phase').textContent = moonData.phase;
+      document.getElementById('moon-current-phase').textContent = moonData.phase;
+      document.getElementById('moon-illumination').textContent = `${moonData.illumination}%`;
+
+      const voidStatus = isMoonVoidOfCourse();
+      const voidText = voidStatus ? 'Yes' : 'No';
+      document.getElementById('void-status').textContent = voidText;
+      document.getElementById('moon-void').textContent = voidText;
+
+      const { sunrise, sunset } = calculateSunTimes(appState.currentDate, appState.timezoneOffset);
+      document.getElementById('sunrise-time').textContent = formatTime(sunrise, appState.timeFormat);
+      document.getElementById('sunset-time').textContent = formatTime(sunset, appState.timeFormat);
+
+      // More realistic moon sign calculation
+      const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+      const moonSignIndex = (Math.floor(appState.currentDate.getDate() / 2.5) + appState.currentDate.getMonth()) % 12;
+      const moonSign = zodiacSigns[moonSignIndex];
+      document.getElementById('moon-sign-now').textContent = moonSign;
+      document.getElementById('moon-sign').textContent = moonSign;
+
+      // Next hours
+      const nextHoursContainer = document.getElementById('next-hours');
+      nextHoursContainer.innerHTML = '';
+      const currentIndex = hours.findIndex(h => h === currentHour);
+      const nextHours = hours.slice(currentIndex + 1, currentIndex + 4);
+      nextHours.forEach(hour => {
+        const planetData = getPlanetData(hour.planet);
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        item.innerHTML = `
+          <div class="timeline-icon">${planetData.symbol}</div>
+          <div class="timeline-content">
+            <div class="timeline-planet">${planetData.name} ${hour.isDaytime ? '☀' : '☽'}</div>
+            <div class="timeline-time">${formatTime(hour.startTime, appState.timeFormat)} - ${formatTime(hour.endTime, appState.timeFormat)}</div>
+          </div>
+        `;
+        nextHoursContainer.appendChild(item);
+      });
+
+      // Planetary transits - more realistic
+      const transitsContainer = document.getElementById('transits-list');
+      transitsContainer.innerHTML = '';
+      const now = new Date();
+      const currentDay = now.getDate();
+      planets.forEach((planet, index) => {
+        const signIndex = (index * 3 + Math.floor(currentDay / 3)) % 12;
+        const sign = zodiacSigns[signIndex];
+        const degree = Math.floor(Math.random() * 30);
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        item.innerHTML = `
+          <div class="timeline-icon">${planet.symbol}</div>
+          <div class="timeline-content">
+            <div class="timeline-planet">${planet.name} in ${sign} ${degree}°</div>
+            <div class="timeline-time">${planet.keywords.split(',')[0].trim()} - ${planet.activities.split(',')[0].trim()}</div>
+          </div>
+        `;
+        transitsContainer.appendChild(item);
+      });
+    }
+
+    function updateSchedulePage() {
+      const dateInput = document.getElementById('schedule-date');
+      const selectedDate = dateInput.value ? new Date(dateInput.value + 'T12:00:00') : appState.currentDate;
+      const hours = calculatePlanetaryHours(selectedDate, appState.timezoneOffset);
+      const scheduleContainer = document.getElementById('full-schedule');
+      scheduleContainer.innerHTML = '';
+      const now = new Date();
+      hours.forEach(hour => {
+        const planetData = getPlanetData(hour.planet);
+        const item = document.createElement('div');
+        item.className = 'timeline-item';
+        if (now >= hour.startTime && now < hour.endTime) {
+          item.classList.add('current');
+        }
+        item.innerHTML = `
+          <div class="timeline-icon">${planetData.symbol}</div>
+          <div class="timeline-content">
+            <div class="timeline-planet">${planetData.name} ${hour.isDaytime ? '☀' : '☽'}</div>
+            <div class="timeline-time">${formatTime(hour.startTime, appState.timeFormat)} - ${formatTime(hour.endTime, appState.timeFormat)}</div>
+          </div>
+        `;
+        scheduleContainer.appendChild(item);
+      });
+    }
+
+    function renderPlanetGrid() {
+      const grid = document.getElementById('planet-grid');
+      grid.innerHTML = '';
+      planets.forEach(planet => {
+        const card = document.createElement('div');
+        card.className = 'planet-card';
+        card.innerHTML = `
+          <div class="planet-card-header">
+            <div class="planet-card-symbol">${planet.symbol}</div>
+            <div class="planet-card-name">${planet.name}</div>
+          </div>
+          <div class="planet-card-info">
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Ruling Day:</div>
+              ${planet.day}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Astrological Rulership:</div>
+              Rulers ${planet.rulership}, Exalted in ${planet.exaltation}, Detriment in ${planet.detriment}, Fall in ${planet.fall}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Element:</div>
+              ${planet.element}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Sacred Metals:</div>
+              ${planet.metal}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Colors:</div>
+              ${planet.color}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Herbs:</div>
+              ${planet.herbs}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Stones:</div>
+              ${planet.stones}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Keywords:</div>
+              ${planet.keywords}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Best Activities:</div>
+              ${planet.activities}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Associated Deities:</div>
+              ${planet.deities}
+            </div>
+            <div class="planet-card-detail">
+              <div class="planet-card-label">Best Times to Work:</div>
+              ${planet.bestTimes}
+            </div>
+            <div class="planet-card-detail" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(212, 175, 55, 0.2);">
+              ${planet.description}
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function updateMoonMagic() {
+      const moonData = calculateMoonPhase(appState.currentDate);
+      document.getElementById('moon-current-phase').textContent = moonData.phase;
+      document.getElementById('moon-illumination').textContent = `${moonData.illumination}%`;
+      
+      const voidStatus = isMoonVoidOfCourse();
+      document.getElementById('moon-void').textContent = voidStatus ? 'Yes' : 'No';
+      
+      // More realistic moon sign
+      const zodiacSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+      const moonSignIndex = (Math.floor(appState.currentDate.getDate() / 2.5) + appState.currentDate.getMonth()) % 12;
+      const moonSign = zodiacSigns[moonSignIndex];
+      document.getElementById('moon-sign').textContent = moonSign;
+      
+      const phaseGuidance = {
+        'New Moon': {
+          title: 'New Moon - New Beginnings',
+          description: 'The New Moon is a powerful time for setting intentions and planting seeds for the future. This is the darkest phase, representing a blank slate and infinite potential.',
+          activities: 'Set intentions, start new projects, plant seeds (literal or metaphorical), journal about your desires, create vision boards, perform new beginning rituals.',
+          magic: 'New Moon magic focuses on manifestation, new starts, and calling in what you desire. This is the time to ask "What do I want to create?"',
+          avoid: 'Avoid dwelling on the past or trying to complete old projects. This is not a time for endings.'
+        },
+        'Waxing Crescent': {
+          title: 'Waxing Crescent - Building Momentum',
+          description: 'The Waxing Crescent phase is about taking action on your New Moon intentions. Energy is building, and it\'s time to move forward with your plans.',
+          activities: 'Take action on goals, build momentum, stay focused on intentions, network and make connections, start new habits, practice courage.',
+          magic: 'Waxing Crescent magic focuses on growth, courage, and forward movement. Spells for attraction and increase are powerful now.',
+          avoid: 'Avoid giving up too soon or getting discouraged. Growth takes time and consistent effort.'
+        },
+        'First Quarter': {
+          title: 'First Quarter - Overcoming Challenges',
+          description: 'The First Quarter Moon brings challenges and obstacles that test your commitment. This is a time of decision-making and pushing through resistance.',
+          activities: 'Make important decisions, overcome obstacles, take bold action, address challenges head-on, strengthen your resolve, problem-solve.',
+          magic: 'First Quarter magic focuses on strength, determination, and breaking through barriers. This is warrior energy.',
+          avoid: 'Avoid giving up when things get difficult. Challenges now are opportunities for growth.'
+        },
+        'Waxing Gibbous': {
+          title: 'Waxing Gibbous - Refinement',
+          description: 'The Waxing Gibbous phase is about refining your approach and making adjustments. You\'re close to manifestation - fine-tune your plans.',
+          activities: 'Refine your plans, make adjustments, edit and improve, practice patience, prepare for completion, trust the process.',
+          magic: 'Waxing Gibbous magic focuses on refinement, patience, and perfecting your craft. Spells for improvement and enhancement work well.',
+          avoid: 'Avoid rushing to completion or skipping important details. Patience and refinement lead to better results.'
+        },
+        'Full Moon': {
+          title: 'Full Moon - Peak Power & Release',
+          description: 'The Full Moon is the most powerful phase, representing culmination, celebration, and release. Energy is at its peak - harvest what you\'ve sown and let go of what no longer serves.',
+          activities: 'Celebrate achievements, perform release rituals, charge crystals and tools, do divination, express gratitude, let go of what doesn\'t serve you.',
+          magic: 'Full Moon magic is the most powerful. All types of magic are amplified. This is ideal for charging tools, divination, and release work.',
+          avoid: 'Avoid starting new projects or holding onto what needs to be released. This is a time of completion, not beginning.'
+        },
+        'Waning Gibbous': {
+          title: 'Waning Gibbous - Gratitude & Sharing',
+          description: 'The Waning Gibbous phase is about gratitude, sharing your wisdom, and giving back. You\'ve received - now it\'s time to share.',
+          activities: 'Express gratitude, share your knowledge, teach others, give back to community, reflect on lessons learned, practice generosity.',
+          magic: 'Waning Gibbous magic focuses on gratitude, wisdom-sharing, and community. Spells for teaching and mentoring are powerful.',
+          avoid: 'Avoid hoarding knowledge or resources. This is a time for generous sharing.'
+        },
+        'Last Quarter': {
+          title: 'Last Quarter - Letting Go',
+          description: 'The Last Quarter Moon is about release, forgiveness, and letting go. This is a time to clear away what no longer serves your highest good.',
+          activities: 'Release old patterns, forgive yourself and others, clear clutter, end toxic relationships, break bad habits, practice acceptance.',
+          magic: 'Last Quarter magic focuses on banishing, releasing, and cutting cords. This is powerful for letting go work.',
+          avoid: 'Avoid clinging to the past or resisting necessary endings. Release creates space for new blessings.'
+        },
+        'Waning Crescent': {
+          title: 'Waning Crescent - Rest & Surrender',
+          description: 'The Waning Crescent is the final phase before the New Moon. This is a time for deep rest, reflection, and spiritual connection. Surrender and trust.',
+          activities: 'Rest deeply, meditate, practice self-care, reflect on the lunar cycle, connect with your intuition, prepare for new beginnings, surrender.',
+          magic: 'Waning Crescent magic focuses on rest, intuition, and spiritual connection. This is ideal for divination and inner work.',
+          avoid: 'Avoid pushing yourself or starting new projects. Honor your need for rest and restoration.'
+        }
+      };
+      
+      const guidance = phaseGuidance[moonData.phase];
+      const guidanceContainer = document.getElementById('moon-guidance');
+      guidanceContainer.innerHTML = `
+        <div class="card" style="margin-top: 20px;">
+          <div class="card-title">${guidance.title}</div>
+          <p style="line-height: 1.7; color: var(--text-dark); margin-bottom: 18px;">${guidance.description}</p>
+          <div style="background: rgba(212, 175, 55, 0.1); padding: 18px; border-radius: 10px; margin-bottom: 14px; border-left: 4px solid var(--gold);">
+            <div style="font-weight: 700; color: var(--gold); margin-bottom: 8px; font-size: 15px;">Recommended Activities</div>
+            <p style="line-height: 1.6; color: var(--text-dark);">${guidance.activities}</p>
+          </div>
+          <div style="background: rgba(255, 0, 110, 0.1); padding: 18px; border-radius: 10px; margin-bottom: 14px; border-left: 4px solid var(--pink);">
+            <div style="font-weight: 700; color: var(--pink); margin-bottom: 8px; font-size: 15px;">Moon Magic</div>
+            <p style="line-height: 1.6; color: var(--text-dark);">${guidance.magic}</p>
+          </div>
+          <div style="background: rgba(255, 149, 0, 0.1); padding: 18px; border-radius: 10px; border-left: 4px solid #ff9500;">
+            <div style="font-weight: 700; color: #ff9500; margin-bottom: 8px; font-size: 15px;">What to Avoid</div>
+            <p style="line-height: 1.6; color: var(--text-dark);">${guidance.avoid}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    // UI functions
+    function navigateToPage(pageName) {
+      document.querySelectorAll('.page-section').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(`page-${pageName}`).classList.add('active');
+      
+      document.querySelectorAll('.side-nav-item, .bottom-nav-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.page === pageName) {
+          item.classList.add('active');
+        }
+      });
+      
+      // Scroll to top
+      document.querySelector('.main-content').scrollTop = 0;
+      
+      if (pageName === 'now') {
+        updateNowPage();
+      } else if (pageName === 'schedule') {
+        updateSchedulePage();
+      } else if (pageName === 'tools') {
+        renderPlanetGrid();
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.tab === tabName) {
+          tab.classList.add('active');
+        }
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        if (content.dataset.tabContent === tabName) {
+          content.classList.add('active');
+        }
+      });
+      // Scroll to top
+      document.querySelector('.main-content').scrollTop = 0;
+      
+      if (tabName === 'moon') {
+        updateMoonMagic();
+      }
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function saveToHistory(record) {
+      allRecords.unshift(record);
+      if (allRecords.length > 50) {
+        allRecords = allRecords.slice(0, 50);
+      }
+      localStorage.setItem('horaHistory', JSON.stringify(allRecords));
+    }
+
+    function renderHistoryList() {
+      const historyList = document.getElementById('history-list');
+      if (allRecords.length === 0) {
+        historyList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><div class="empty-state-text">No calculation history yet. Start exploring the cosmic tools!</div></div>';
+      } else {
+        historyList.innerHTML = '';
+        allRecords.forEach(record => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          const date = new Date(record.timestamp);
+          item.innerHTML = `
+            <div class="history-item-content">
+              <div class="history-item-title">${record.title}</div>
+              <div class="history-item-date">${date.toLocaleDateString()} at ${date.toLocaleTimeString()}</div>
+            </div>
+            <button class="history-item-delete" data-id="${record.id}">Delete</button>
+          `;
+          historyList.appendChild(item);
+        });
+        
+        document.querySelectorAll('.history-item-delete').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            allRecords = allRecords.filter(r => r.id !== id);
+            localStorage.setItem('horaHistory', JSON.stringify(allRecords));
+            renderHistoryList();
+          });
+        });
+      }
+    }
+
+    // Event Listeners
+    document.querySelectorAll('.side-nav-item, .bottom-nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        navigateToPage(this.dataset.page);
+      });
+    });
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        switchTab(this.dataset.tab);
+      });
+    });
+
+    document.getElementById('schedule-date').addEventListener('change', updateSchedulePage);
+
+    document.getElementById('timezone-select').addEventListener('change', function() {
+      appState.timezoneOffset = parseFloat(this.value);
+      const selectedOption = this.options[this.selectedIndex].text;
+      document.getElementById('current-timezone-display').textContent = `Current timezone: ${selectedOption}`;
+      updateNowPage();
+      updateSchedulePage();
+    });
+
+    document.getElementById('time-format-toggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      appState.timeFormat = appState.timeFormat === '12' ? '24' : '12';
+      document.getElementById('time-format-value').textContent = 
+        appState.timeFormat === '12' ? '12-hour' : '24-hour';
+      updateNowPage();
+      updateSchedulePage();
+    });
+
+    // Theme toggle - Light mode is default
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      appState.theme = appState.theme === 'light' ? 'dark' : 'light';
+      document.getElementById('theme-value').textContent = 
+        appState.theme === 'light' ? 'Day Mode' : 'Dark Mode';
+      
+      // Apply theme
+      document.body.classList.remove('theme-light', 'theme-dark');
+      document.body.classList.add(`theme-${appState.theme}`);
+    });
+
+    document.getElementById('notifications-toggle').addEventListener('click', function() {
+      this.classList.toggle('active');
+      appState.notifications = !appState.notifications;
+      document.getElementById('notifications-value').textContent = 
+        appState.notifications ? 'Enabled' : 'Disabled';
+    });
+
+    document.getElementById('save-personal-btn').addEventListener('click', function() {
+      appState.personalName = document.getElementById('personal-name').value;
+      appState.personalDOB = document.getElementById('personal-dob').value;
+      localStorage.setItem('personalName', appState.personalName);
+      localStorage.setItem('personalDOB', appState.personalDOB);
+      alert('Personal info saved!');
+    });
+
+    document.getElementById('clear-personal-btn').addEventListener('click', function() {
+      appState.personalName = '';
+      appState.personalDOB = '';
+      document.getElementById('personal-name').value = '';
+      document.getElementById('personal-dob').value = '';
+      localStorage.removeItem('personalName');
+      localStorage.removeItem('personalDOB');
+      alert('Personal info cleared!');
+    });
+
+    document.getElementById('view-history-btn').addEventListener('click', function() {
+      renderHistoryList();
+      openModal('history-modal');
+    });
+
+    document.getElementById('clear-history-btn').addEventListener('click', function() {
+      if (confirm('Are you sure you want to clear all history?')) {
+        allRecords = [];
+        localStorage.removeItem('horaHistory');
+        alert('History cleared!');
+      }
+    });
+
+    document.getElementById('about-app-btn').addEventListener('click', () => openModal('about-modal'));
+    document.getElementById('privacy-policy-btn').addEventListener('click', () => openModal('privacy-modal'));
+    document.getElementById('terms-btn').addEventListener('click', () => openModal('terms-modal'));
+
+    // Find Next Feature
+    document.getElementById('find-next-btn').addEventListener('click', function() {
+      const planet = document.getElementById('find-next-planet').value;
+      if (!planet) {
+        document.getElementById('find-next-result').textContent = 'Please select a planet';
+        return;
+      }
+      const nextHour = findNextPlanetaryHour(planet, new Date(), appState.timezoneOffset);
+      if (nextHour) {
+        document.getElementById('find-next-result').innerHTML = 
+          `Next ${planet} hour: ${formatTime(nextHour.startTime, appState.timeFormat)} - ${formatTime(nextHour.endTime, appState.timeFormat)} on ${nextHour.startTime.toLocaleDateString()}`;
+      } else {
+        document.getElementById('find-next-result').textContent = 'Could not find next hour within 30 days';
+      }
+    });
+
+    // Form submissions - all calculations happen locally
+    document.getElementById('numerology-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('num-name').value;
+      const dob = document.getElementById('num-dob').value;
+      
+      const lifePath = calculateLifePath(dob);
+      const expression = calculateExpression(name);
+      const soulUrge = calculateSoulUrge(name);
+      const personality = calculatePersonality(name);
+      
+      const record = {
+        id: Date.now().toString(),
+        type: 'numerology',
+        timestamp: new Date().toISOString(),
+        name: name,
+        date_of_birth: dob,
+        result_data: JSON.stringify({ lifePath, expression, soulUrge, personality }),
+        title: `Numerology for ${name}`
+      };
+      saveToHistory(record);
+      
+      document.getElementById('numerology-results').innerHTML = `
+        <div class="result-card">
+          <div class="result-title">Your Numerology Profile</div>
+          <div class="result-item">
+            <div class="result-label">Life Path Number</div>
+            <div class="result-value">${lifePath}</div>
+            <div class="result-description">Your core purpose and life journey</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Expression Number (Destiny)</div>
+            <div class="result-value">${expression}</div>
+            <div class="result-description">Your natural talents and abilities</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Soul Urge Number (Heart's Desire)</div>
+            <div class="result-value">${soulUrge}</div>
+            <div class="result-description">Your inner motivations and desires</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Personality Number (Outer Self)</div>
+            <div class="result-value">${personality}</div>
+            <div class="result-description">How others perceive you</div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('astrology-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const dob = document.getElementById('astro-dob').value;
+      const zodiac = getZodiacSign(dob);
+      
+      const record = {
+        id: Date.now().toString(),
+        type: 'astrology',
+        timestamp: new Date().toISOString(),
+        name: '',
+        date_of_birth: dob,
+        result_data: JSON.stringify(zodiac),
+        title: `Astrology - ${zodiac.name}`
+      };
+      saveToHistory(record);
+      
+      document.getElementById('astrology-results').innerHTML = `
+        <div class="result-card">
+          <div class="result-title">Your Astrological Profile</div>
+          <div class="result-item">
+            <div class="result-label">Sun Sign</div>
+            <div class="result-value">${zodiac.symbol} ${zodiac.name}</div>
+            <div class="result-description">Your core identity and life purpose</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Element</div>
+            <div class="result-value">${zodiac.element}</div>
+            <div class="result-description">Your fundamental energy type</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Modality</div>
+            <div class="result-value">${zodiac.modality}</div>
+            <div class="result-description">Your approach to life and action</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Ruling Planet</div>
+            <div class="result-value">${zodiac.ruler}</div>
+            <div class="result-description">The celestial body that governs your sign</div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('draw-tarot-btn').addEventListener('click', function() {
+      const spread = document.getElementById('tarot-spread').value;
+      let numCards = 1;
+      if (spread === 'three') numCards = 3;
+      if (spread === 'celtic') numCards = 10;
+      
+      const shuffled = [...tarotDeck].sort(() => Math.random() - 0.5);
+      const drawn = shuffled.slice(0, numCards);
+      
+      const record = {
+        id: Date.now().toString(),
+        type: 'tarot',
+        timestamp: new Date().toISOString(),
+        name: '',
+        date_of_birth: '',
+        result_data: JSON.stringify(drawn),
+        title: `Tarot - ${spread} spread`
+      };
+      saveToHistory(record);
+      
+      document.getElementById('tarot-results').innerHTML = '';
+      drawn.forEach((card, index) => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'tarot-card';
+        cardDiv.style.marginTop = '20px';
+        let position = '';
+        if (spread === 'three') {
+          position = ['Past', 'Present', 'Future'][index];
+        } else if (spread === 'celtic') {
+          position = ['Present Situation', 'Challenge/Obstacle', 'Distant Past', 'Recent Past', 'Best Outcome', 'Immediate Future', 'Your Approach', 'External Influences', 'Hopes & Fears', 'Final Outcome'][index];
+        }
+        cardDiv.innerHTML = `
+          <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+            <div style="font-size: 48px; color: var(--gold);">${card.symbol}</div>
+          </div>
+          <div class="tarot-card-name">${card.name}</div>
+          ${position ? `<div style="font-size: 14px; color: var(--gold); margin-bottom: 12px; font-weight: 600;">${position}</div>` : ''}
+          <div class="tarot-card-meaning">${card.meaning}</div>
+        `;
+        document.getElementById('tarot-results').appendChild(cardDiv);
+      });
+    });
+
+    document.getElementById('cast-iching-btn').addEventListener('click', function() {
+      const hexagram = iChingHexagrams[Math.floor(Math.random() * iChingHexagrams.length)];
+      
+      const record = {
+        id: Date.now().toString(),
+        type: 'iching',
+        timestamp: new Date().toISOString(),
+        name: '',
+        date_of_birth: '',
+        result_data: JSON.stringify(hexagram),
+        title: `I Ching - ${hexagram.name}`
+      };
+      saveToHistory(record);
+      
+      document.getElementById('iching-results').innerHTML = `
+        <div class="result-card">
+          <div class="result-title">Hexagram ${hexagram.number}</div>
+          <div class="result-item">
+            <div class="result-label">${hexagram.name}</div>
+            <div class="result-description">${hexagram.meaning}</div>
+            <div class="result-explanation">
+              The I Ching speaks through symbols and metaphors. Meditate on this guidance and consider how it applies to your current situation. 
+              Trust your intuition to understand its deeper meaning for you.
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById('biorhythms-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const dob = document.getElementById('bio-dob').value;
+      const bio = calculateBiorhythms(dob);
+      
+      const record = {
+        id: Date.now().toString(),
+        type: 'biorhythms',
+        timestamp: new Date().toISOString(),
+        name: '',
+        date_of_birth: dob,
+        result_data: JSON.stringify(bio),
+        title: 'Biorhythms Reading'
+      };
+      saveToHistory(record);
+      
+      document.getElementById('biorhythms-results').innerHTML = `
+        <div class="result-card">
+          <div class="result-title">Your Biorhythms Today</div>
+          <div class="result-item">
+            <div class="result-label">Physical Cycle (23 days)</div>
+            <div class="result-value">${bio.physical}%</div>
+            <div class="result-description">${bio.physical > 0 ? 'Positive - Good physical condition' : 'Low - Rest and recovery needed'}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Emotional Cycle (28 days)</div>
+            <div class="result-value">${bio.emotional}%</div>
+            <div class="result-description">${bio.emotional > 0 ? 'Positive - Emotional stability' : 'Low - Emotional sensitivity'}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Intellectual Cycle (33 days)</div>
+            <div class="result-value">${bio.intellectual}%</div>
+            <div class="result-description">${bio.intellectual > 0 ? 'Positive - Mental clarity' : 'Low - Mental fatigue'}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-explanation">
+              Biorhythms are biological cycles that influence your physical, emotional, and intellectual states. 
+              Plan important activities during high phases of the relevant cycle.
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    // Initialize app
+    function initApp() {
+      // Set Nigeria timezone (UTC+1) as default
+      appState.timezoneOffset = 1;
+      document.getElementById('timezone-select').value = '1';
+      document.getElementById('current-timezone-display').textContent = 'Current timezone: UTC+01:00 (Lagos, Nigeria)';
+      
+      // Load personal info
+      appState.personalName = localStorage.getItem('personalName') || '';
+      appState.personalDOB = localStorage.getItem('personalDOB') || '';
+      document.getElementById('personal-name').value = appState.personalName;
+      document.getElementById('personal-dob').value = appState.personalDOB;
+      
+      // Set today's date
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('schedule-date').value = today;
+      
+      // Set theme to Light Mode (default)
+      document.getElementById('theme-toggle').classList.add('active');
+      document.body.classList.add('theme-light');
+      
+      // Show splash screen for 2.5 seconds
+      setTimeout(() => {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        
+        // Show tutorial on first visit
+        if (!localStorage.getItem('hora_visited')) {
+          openModal('tutorial-modal');
+          localStorage.setItem('hora_visited', 'true');
+        }
+        
+        // Initialize pages
+        updateNowPage();
+        renderPlanetGrid();
+        
+        // Update every minute
+        setInterval(() => {
+          appState.currentDate = new Date();
+          updateNowPage();
+        }, 60000);
+      }, 2500);
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
